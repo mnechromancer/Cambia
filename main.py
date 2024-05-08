@@ -41,25 +41,44 @@ def draw_grid(surface, A):
 def draw_kernel_info(surface):
     surface.fill(BLACK)
     
-    # Draw kernel
+    # Draw kernel at the top (centered within non-grid area)
+    # Assuming info_width is defined somewhere in your code
     kernel_size = K.shape[0]
+    total_width = kernel_size * 50  # total width of all rectangles
+    start_x = (info_width - total_width) // 2  # starting x-coordinate
+
     for y in range(kernel_size):
         for x in range(kernel_size):
             color = WHITE if K[y, x] == 1 else BLACK
-            pygame.draw.rect(surface, color, (x * 50, y * 50, 50, 50))
-            pygame.draw.rect(surface, RED, (x * 50, y * 50, 50, 50), 1)
+            pygame.draw.rect(surface, color, (start_x + x * 50, y * 50, 50, 50))
+            pygame.draw.rect(surface, RED, (start_x + x * 50, y * 50, 50, 50), 1)
     
     # Draw cross-section
+    # Assuming info_width and info_height are defined somewhere in your code
     cross_section = K[kernel_size // 2, :]
+    cross_section_width = len(cross_section) * 50  # total width of all rectangles in the cross-section
+    cross_section_height = 50  # height of the cross-section
+
+    start_x = (info_width - cross_section_width) // 2  # starting x-coordinate
+    start_y = (info_height - cross_section_height) // 2  # starting y-coordinate
+
     for i, value in enumerate(cross_section):
         color = WHITE if value == 1 else BLACK
-        pygame.draw.rect(surface, color, (i * 50, 150, 50, 50))
-        pygame.draw.rect(surface, RED, (i * 50, 150, 50, 50), 1)
+        pygame.draw.rect(surface, color, (start_x + i * 50, start_y, 50, 50))
+        pygame.draw.rect(surface, RED, (start_x + i * 50, start_y, 50, 50), 1)
     
     # Draw growth function
     x_vals = np.linspace(0, K_sum, 100)
     y_vals = growth(x_vals)
-    points = [(int(x * 50), int(250 - y * 50)) for x, y in zip(x_vals, y_vals)]
+
+    # Calculate total width of the growth function
+    growth_width = max(x_vals) - min(x_vals)  # total width of all points in the growth function
+
+    start_x = (game_width - growth_width) // 2 # starting x-coordinate
+    start_y = info_height - max(y_vals) - 50  # y-coordinate at the bottom of the info_height
+    print(start_x, start_y)
+
+    points = [(start_x + int(x), start_y + int(y)) for x, y in zip(x_vals, y_vals)]
     if len(points) > 1:
         pygame.draw.lines(surface, WHITE, False, points)
 
